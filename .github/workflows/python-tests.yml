@@ -67,7 +67,7 @@ jobs:
 
     #Set up the official Snyk CLI
     - name: Set up Snyk CLI
-      uses: snyk/actions/setup@v3
+      uses: snyk/actions/setup@v4
 
     #Run Snyk test for Python requirements
     - name: Run Snyk to check for vulnerabilities
