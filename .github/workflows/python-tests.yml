@@ -66,11 +66,12 @@ jobs:
         pip install -r requirements.txt
 
     - name: Run Snyk to check for vulnerabilities in Python dependencies
-      uses: snyk/actions/python@master
+      uses: snyk/actions/cli@master
       env:
         SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
       with:
-        args: --sarif-file-output=snyk-results.sarif
+        command: test
+        args: --file=requirements.txt --sarif-file-output=snyk-results.sarif --package-manager=pip
 
     - name: Upload Snyk scan results to GitHub Security tab
       uses: github/codeql-action/upload-sarif@v3
