@@ -9,18 +9,26 @@ on:
 
 jobs:
   test:
-    runs-on: ubuntu-latest
+    runs-on: ${{ matrix.os }}
     strategy:
       matrix:
         python-version: ["3.8", "3.9", "3.10", "3.11", "3.12", "3.13"]
+        os: [ubuntu-latest, macos-latest]
 
     steps:
       - uses: actions/checkout@v4
-
       - name: Set up Python ${{ matrix.python-version }}
         uses: actions/setup-python@v5
         with:
           python-version: ${{ matrix.python-version }}
+
+      - name: Cache node modules
+        uses: actions/cache@v4
+        with:
+         path: ~/.npm  # location where npm stores its cache
+         key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+         restore-keys: |
+           ${{ runner.os }}-node-
 
       - name: Install dependencies
         run: |
@@ -30,3 +38,11 @@ jobs:
       - name: Run pytest
         run: |
           pytest tests/
+
+      - name: Upload test results or build artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: nodejs-build-${{ matrix.os }}-${{ matrix.node-version }}
+          path: |
+            ./
+            !node_modules/
