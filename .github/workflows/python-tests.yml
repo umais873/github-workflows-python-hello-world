@@ -39,10 +39,4 @@ jobs:
         run: |
           pytest tests/
 
-      - name: Upload test results or build artifacts
-        uses: actions/upload-artifact@v4
-        with:
-          name: nodejs-build-${{ matrix.os }}-${{ matrix.node-version }}
-          path: |
-            ./
-            !node_modules/
+      
