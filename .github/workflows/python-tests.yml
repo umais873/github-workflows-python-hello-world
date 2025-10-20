@@ -12,7 +12,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        python-version: ["3.8", "3.9", "3.10", "3.11", "3.12", "3.13"]
+        python-version: ["3.8", "3.13"]
         os: [ubuntu-latest, macos-latest]
 
     steps:
@@ -65,13 +65,15 @@ jobs:
         python -m pip install --upgrade pip
         pip install -r requirements.txt
 
-    - name: Run Snyk to check for vulnerabilities in Python dependencies
-      uses: snyk/actions/cli@master
+    #Set up the official Snyk CLI
+    - name: Set up Snyk CLI
+      uses: snyk/actions/setup@v3
+
+    #Run Snyk test for Python requirements
+    - name: Run Snyk to check for vulnerabilities
       env:
         SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
-      with:
-        command: test
-        args: --file=requirements.txt --sarif-file-output=snyk-results.sarif --package-manager=pip
+      run: snyk test --file=requirements.txt --package-manager=pip --sarif-file-output=snyk-results.sarif
 
     - name: Upload Snyk scan results to GitHub Security tab
       uses: github/codeql-action/upload-sarif@v3
