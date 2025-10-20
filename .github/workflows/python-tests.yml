@@ -42,41 +42,40 @@ jobs:
 
   # Job 2: Snyk Vulnerability Scan
   snyk-scan:
-    name: Snyk Security Scan
-    needs: test # Ensures this runs after the build/test job completes successfully
+    name: Snyk Security Scan (Python)
+    needs: test
     runs-on: ubuntu-latest
-        
+
     permissions:
-      contents: read # Required to checkout the code
-      security-events: write # Required to upload SARIF results
+      contents: read
+      security-events: write
 
     steps:
-    - name: Checkout repository
-      uses: actions/checkout@v4
-    
-    # You might need to install node dependencies for Snyk to scan your package-lock.json correctly
-    - name: Set up Python
-      uses: actions/setup-python@v5
-      with:
-        python-version: "3.12"
+      - name: Checkout repository
+        uses: actions/checkout@v4
 
-    - name: Install dependencies
-      run: |
-        python -m pip install --upgrade pip
-        pip install -r requirements.txt
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
 
-    #Set up the official Snyk CLI
-    - name: Set up Snyk CLI
-      uses: snyk/actions/setup@v4
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
 
-    #Run Snyk test for Python requirements
-    - name: Run Snyk to check for vulnerabilities
-      env:
-        SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
-      run: snyk test --file=requirements.txt --package-manager=pip --sarif-file-output=snyk-results.sarif
+      #Official Snyk CLI setup (latest method)
+      - name: Set up Snyk CLI
+        uses: snyk/actions/setup@master
 
-    - name: Upload Snyk scan results to GitHub Security tab
-      uses: github/codeql-action/upload-sarif@v3
-      with:
-        sarif_file: snyk-results.sarif   
-      
+      #Run Python vulnerability scan
+      - name: Run Snyk to check for vulnerabilities
+        env:
+          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+        run: snyk test --file=requirements.txt --package-manager=pip --sarif-file-output=snyk-results.sarif
+
+      #Upload SARIF report to GitHub Security tab
+      - name: Upload Snyk scan results to GitHub Security tab
+        uses: github/codeql-action/upload-sarif@v3
+        with:
+          sarif_file: snyk-results.sarif
