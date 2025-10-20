@@ -42,7 +42,7 @@ jobs:
   # Job 2: Snyk Vulnerability Scan
   snyk-scan:
     name: Snyk Security Scan (Python)
-    needs: build
+    needs: test
     runs-on: ubuntu-latest
 
     permissions:
