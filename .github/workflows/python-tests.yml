@@ -34,8 +34,10 @@ jobs:
 
       - name: Run pytest
         run: pytest tests/
-
-
+  # Run Test
+      - name: Run tests
+        run: |
+          pytest --maxfail=1 --disable-warnings -q
   # Job 2: Snyk Vulnerability Scan
   snyk-scan:
     name: Snyk Security Scan (Python)
